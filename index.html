@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreshRoute Logistics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <style>
+    :root {
+      --verde-oscuro: #0f3b24;
+      --verde: #1f7a45;
+      --naranja: #ff6a2c;
+      --naranja-oscuro: #e04e14;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', Arial, sans-serif; background: #f1ece4; color: #2d3a32; overflow-x: hidden; }
+
+    /* ===== ANIMACIONES ===== */
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: none; } }
+    @keyframes appear { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+    @keyframes skyShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    @keyframes sunGlow { 0%,100% { box-shadow: 0 0 60px 25px rgba(255,190,110,.55); transform: scale(1); } 50% { box-shadow: 0 0 100px 45px rgba(255,170,90,.8); transform: scale(1.06); } }
+    @keyframes cloud { from { transform: translateX(-200px); } to { transform: translateX(110vw); } }
+    @keyframes parallax { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes roadLines { from { background-position: 0 0; } to { background-position: -160px 0; } }
+    @keyframes drive { 0%,100% { transform: translateX(-60px); } 50% { transform: translateX(60px); } }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes rotateWheel { to { transform: rotate(360deg); } }
+    @keyframes dust { 0% { opacity: .7; transform: translate(0,0) scale(.4); } 100% { opacity: 0; transform: translate(-90px,-25px) scale(1.8); } }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-14px) rotate(5deg); } }
+    @keyframes pulse { 0%,100% { box-shadow: 0 6px 18px rgba(255,106,44,.35), 0 0 0 0 rgba(255,106,44,.45); } 50% { box-shadow: 0 6px 26px rgba(255,106,44,.6), 0 0 0 14px rgba(255,106,44,0); } }
+    @keyframes shine { 0% { left: -80%; } 60%,100% { left: 130%; } }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    @keyframes gradientLine { to { background-position: 200% 50%; } }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 5%;
+      background: rgba(255,255,255,.85); backdrop-filter: blur(10px);
+      animation: slideDown .8s ease-out both;
+    }
+    .logo { font-weight: 800; font-size: 18px; color: var(--verde-oscuro); letter-spacing: 1px; }
+    .logo span { display: inline-block; background: var(--verde-oscuro); border-radius: 9px; padding: 4px 7px; margin-right: 6px; animation: float 3s ease-in-out infinite; }
+    .logo small { color: var(--naranja); font-size: 10px; letter-spacing: 3px; }
+    .links a { color: #5d6b62; text-decoration: none; font-size: 14px; font-weight: 600; margin: 0 14px; transition: color .3s; }
+    .links a:hover { color: var(--verde); }
+    .nav-btn { background: var(--verde-oscuro); color: #fff; text-decoration: none; font-size: 13px; font-weight: 700; padding: 10px 20px; border-radius: 30px; transition: .3s; }
+    .nav-btn:hover { background: var(--naranja); transform: translateY(-2px); }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative; min-height: 100vh; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 130px 20px 0; text-align: center;
+      background: linear-gradient(120deg, #fbe3c8, #f9cfa6, #f6e7d6, #dfeee3);
+      background-size: 300% 300%; animation: skyShift 14s ease-in-out infinite;
+    }
+    .sun { position: absolute; top: 34%; left: 50%; width: 140px; height: 140px; margin-left: -70px; border-radius: 50%; background: radial-gradient(circle, #fff3d6 0%, #ffb366 75%); animation: sunGlow 5s ease-in-out infinite; }
+    .cloud { position: absolute; background: rgba(255,255,255,.8); border-radius: 50px; animation: cloud linear infinite; }
+    .cloud::before, .cloud::after { content: ""; position: absolute; background: inherit; border-radius: 50%; }
+    .cloud.c1 { width: 120px; height: 30px; top: 120px; animation-duration: 40s; }
+    .cloud.c1::before { width: 55px; height: 55px; top: -28px; left: 20px; }
+    .cloud.c1::after { width: 40px; height: 40px; top: -18px; left: 60px; }
+    .cloud.c2 { width: 90px; height: 22px; top: 220px; animation-duration: 55s; animation-delay: -25s; opacity: .7; }
+    .cloud.c2::before { width: 40px; height: 40px; top: -20px; left: 15px; }
+    .cloud.c2::after { width: 30px; height: 30px; top: -14px; left: 45px; }
+
+    .hero-content { position: relative; z-index: 5; max-width: 760px; }
+    .tags { font-size: 12px; font-weight: 700; letter-spacing: 2px; color: var(--verde); margin-bottom: 18px; animation: appear .8s .2s both; }
+    .tags b { color: var(--naranja); margin: 0 8px; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--naranja); margin-right: 6px; animation: blink 1.4s infinite; }
+    h1 { font-size: clamp(40px, 7vw, 76px); font-weight: 800; line-height: 1.02; letter-spacing: -2px; color: #1a1a1a; margin-bottom: 18px; animation: appear 1s .35s both; }
+    h1 em { font-style: normal; color: var(--verde); }
+    .hero p.sub { font-size: 17px; line-height: 1.7; color: #4a4a4a; max-width: 560px; margin: 0 auto 28px; animation: appear 1s .5s both; }
+
+    /* ===== FORMULARIO (1 campo) ===== */
+    form {
+      display: flex; gap: 8px; max-width: 480px; margin: 0 auto;
+      background: #fff; padding: 7px; border-radius: 50px;
+      box-shadow: 0 15px 40px rgba(15,59,36,.15);
+      animation: appear 1s .7s both;
+    }
+    form input {
+      flex: 1; border: none; outline: none; font: inherit; font-size: 15px;
+      padding: 12px 18px; border-radius: 40px; background: transparent; min-width: 0;
+    }
+    form button {
+      position: relative; overflow: hidden; border: none; cursor: pointer;
+      background: var(--naranja); color: #fff; font: inherit; font-size: 14px; font-weight: 700;
+      padding: 13px 24px; border-radius: 40px; white-space: nowrap;
+      animation: pulse 2s ease-in-out infinite; transition: background .3s, transform .3s;
+    }
+    form button:hover { background: var(--naranja-oscuro); transform: translateY(-2px); }
+    form button::before { content: ""; position: absolute; top: 0; left: -80%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); transform: skewX(-25deg); animation: shine 3s ease-in-out infinite; }
+    form button:disabled { opacity: .7; cursor: wait; }
+    #mensaje { min-height: 24px; margin-top: 14px; font-size: 14px; font-weight: 600; transition: .3s; }
+    #mensaje.ok { color: var(--verde); }
+    #mensaje.error { color: var(--naranja-oscuro); }
+
+    /* ===== ESCENA CARRETERA ===== */
+    .scene { position: relative; width: 100%; height: 300px; margin-top: auto; }
+    .mountains { position: absolute; left: 0; width: 200%; height: 150px; animation: parallax linear infinite; }
+    .mountains svg { width: 100%; height: 100%; display: block; }
+    .mountains.back { bottom: 95px; animation-duration: 70s; opacity: .5; }
+    .mountains.front { bottom: 90px; animation-duration: 35s; }
+    .road { position: absolute; bottom: 0; left: 0; right: 0; height: 95px; background: #3a3a3a; border-top: 6px solid #c9b89c; }
+    .road::after { content: ""; position: absolute; top: 42px; left: 0; right: 0; height: 6px; background: repeating-linear-gradient(90deg, #f6d27a 0 80px, transparent 80px 160px); animation: roadLines .5s linear infinite; }
+    .truck-wrap { position: absolute; bottom: 42px; left: 50%; width: 380px; margin-left: -190px; z-index: 4; animation: drive 7s ease-in-out infinite; }
+    .truck-body { animation: bounce .35s ease-in-out infinite; }
+    .truck-wrap svg { width: 100%; height: auto; display: block; }
+    .wheel { transform-box: fill-box; transform-origin: center; animation: rotateWheel .5s linear infinite; }
+    .puff { position: absolute; bottom: 14px; left: -8px; width: 22px; height: 22px; border-radius: 50%; background: rgba(210,190,160,.85); animation: dust 1.2s ease-out infinite; }
+    .puff:nth-child(2) { animation-delay: .4s; }
+    .puff:nth-child(3) { animation-delay: .8s; }
+
+    /* ===== FEATURES ===== */
+    .features { padding: 90px 5%; text-align: center; background: #fff; }
+    .fruits span { display: inline-block; font-size: 38px; margin: 0 8px; animation: float 3s ease-in-out infinite; }
+    .fruits span:nth-child(2) { animation-delay: .4s; }
+    .fruits span:nth-child(3) { animation-delay: .8s; }
+    .label { display: inline-block; background: #c9ecd2; color: var(--verde-oscuro); font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 6px 14px; border-radius: 30px; margin: 20px 0 12px; }
+    .features h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; color: var(--verde-oscuro); letter-spacing: -1px; margin-bottom: 12px; }
+    .features p.lead { color: #6b7a70; max-width: 560px; margin: 0 auto 40px; line-height: 1.8; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
+    .card { background: #fff7ee; border-radius: 20px; padding: 30px 20px; transition: transform .35s, box-shadow .35s, background .35s; }
+    .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(15,59,36,.15); background: #fff; }
+    .card .icon { display: inline-block; font-size: 34px; animation: float 3.5s ease-in-out infinite; }
+    .card h3 { color: var(--verde-oscuro); margin: 12px 0 6px; }
+    .card p { color: #6b7a70; font-size: 14px; line-height: 1.6; }
+
+    /* ===== FOOTER ===== */
+    .footer-line { height: 5px; background: linear-gradient(90deg, var(--verde), var(--naranja), #f6d27a, var(--verde)); background-size: 200% 100%; animation: gradientLine 4s linear infinite; }
+    footer { background: var(--verde-oscuro); color: #c9ecd2; text-align: center; padding: 40px 20px; font-size: 14px; line-height: 1.7; }
+    footer strong { display: block; color: #fff; font-size: 18px; letter-spacing: 2px; margin-bottom: 8px; }
+    footer small { display: block; color: #8fb89a; margin-top: 14px; }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s ease, transform .8s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 700px) {
+      .links { display: none; }
+      form { flex-direction: column; border-radius: 24px; }
+      .truck-wrap { width: 260px; margin-left: -130px; }
+      .scene { height: 240px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo"><span>🌿</span>FRESHROUTE <small>LOGISTICS</small></div>
+    <div class="links">
+      <a href="#servicios">Servicios</a>
+      <a href="#servicios">Rutas</a>
+      <a href="#contacto">Nosotros</a>
+    </div>
+    <a href="#suscribete" class="nav-btn">Suscríbete</a>
+  </nav>
+
+  <!-- HERO + FORMULARIO -->
+  <section class="hero" id="suscribete">
+    <div class="sun"></div>
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+
+    <div class="hero-content">
+      <p class="tags"><span class="dot"></span>TRANSPORTE<b>·</b>DISTRIBUCIÓN<b>·</b>FRESCURA</p>
+      <h1>Que tus alimentos<br>nunca dejen de <em>llegar</em></h1>
+      <p class="sub">Transporte y distribución de alimentos con calidad, confianza y puntualidad. Suscríbete y recibe nuestras novedades.</p>
+
+      <form id="form-suscripcion" novalidate>
+        <input type="email" id="user_email" name="user_email" placeholder="Tu correo electrónico" required>
+        <button type="submit" id="btn">Suscribirme →</button>
+      </form>
+      <p id="mensaje"></p>
+    </div>
+
+    <div class="scene">
+      <div class="mountains back">
+        <svg viewBox="0 0 1200 150" preserveAspectRatio="none"><path d="M0 150 L80 60 L160 110 L260 35 L360 105 L450 55 L540 115 L600 150 L680 60 L760 110 L860 35 L960 105 L1050 55 L1140 115 L1200 150 Z" fill="#c98a6a"/></svg>
+      </div>
+      <div class="mountains front">
+        <svg viewBox="0 0 1200 150" preserveAspectRatio="none"><path d="M0 150 L60 95 L140 120 L230 70 L320 120 L420 85 L520 125 L600 150 L660 95 L740 120 L830 70 L920 120 L1020 85 L1120 125 L1200 150 Z" fill="#a8684e"/></svg>
+      </div>
+
+      <div class="truck-wrap">
+        <span class="puff"></span><span class="puff"></span><span class="puff"></span>
+        <div class="truck-body">
+          <svg viewBox="0 0 320 120" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="160" cy="112" rx="150" ry="6" fill="rgba(0,0,0,.25)"/>
+            <rect x="5" y="8" width="200" height="74" rx="4" fill="#e2562b"/>
+            <g stroke="#c4441d" stroke-width="2"><line x1="25" y1="10" x2="25" y2="80"/><line x1="45" y1="10" x2="45" y2="80"/><line x1="165" y1="10" x2="165" y2="80"/><line x1="185" y1="10" x2="185" y2="80"/></g>
+            <text x="105" y="44" text-anchor="middle" font-family="Inter, Arial" font-weight="800" font-size="17" fill="#fff">FRESHROUTE</text>
+            <text x="105" y="62" text-anchor="middle" font-family="Inter, Arial" font-weight="600" font-size="9" fill="#ffe2d4" letter-spacing="3">LOGISTICS</text>
+            <rect x="5" y="82" width="300" height="8" fill="#2b2b2b"/>
+            <path d="M212 30 H268 Q280 30 286 42 L304 64 Q308 70 308 76 V88 H212 Z" fill="#f5f5f5"/>
+            <path d="M262 36 H272 Q278 36 282 44 L294 62 H262 Z" fill="#7fb3c9"/>
+            <rect x="220" y="40" width="34" height="22" rx="3" fill="#7fb3c9"/>
+            <rect x="212" y="68" width="96" height="6" fill="#1f7a45"/>
+            <rect x="302" y="78" width="8" height="6" rx="2" fill="#ffd36b"/>
+            <circle cx="45" cy="96" r="14" fill="#1c1c1c"/><circle cx="80" cy="96" r="14" fill="#1c1c1c"/>
+            <circle cx="240" cy="96" r="14" fill="#1c1c1c"/><circle cx="285" cy="96" r="14" fill="#1c1c1c"/>
+            <g class="wheel"><circle cx="45" cy="96" r="6" fill="#bbb"/><rect x="43.5" y="84" width="3" height="24" fill="#bbb"/></g>
+            <g class="wheel"><circle cx="80" cy="96" r="6" fill="#bbb"/><rect x="78.5" y="84" width="3" height="24" fill="#bbb"/></g>
+            <g class="wheel"><circle cx="240" cy="96" r="6" fill="#bbb"/><rect x="238.5" y="84" width="3" height="24" fill="#bbb"/></g>
+            <g class="wheel"><circle cx="285" cy="96" r="6" fill="#bbb"/><rect x="283.5" y="84" width="3" height="24" fill="#bbb"/></g>
+          </svg>
+        </div>
+      </div>
+      <div class="road"></div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section class="features" id="servicios">
+    <div class="reveal">
+      <div class="fruits"><span>🥬</span><span>🍎</span><span>🥕</span></div>
+      <span class="label">QUIÉNES SOMOS</span>
+      <h2>Frescura en cada recorrido</h2>
+      <p class="lead">Soluciones de transporte y distribución de alimentos, priorizando la calidad, la confianza y la puntualidad en cada entrega.</p>
+    </div>
+    <div class="grid">
+      <div class="card reveal"><span class="icon">❄️</span><h3>Calidad</h3><p>Cadena de frío controlada en cada viaje.</p></div>
+      <div class="card reveal"><span class="icon" style="animation-delay:.5s">🤝</span><h3>Confianza</h3><p>Seguimiento de tu carga en tiempo real.</p></div>
+      <div class="card reveal"><span class="icon" style="animation-delay:1s">⏱️</span><h3>Puntualidad</h3><p>Entregas a tiempo, de origen a destino.</p></div>
+    </div>
+  </section>
+
+  <div class="footer-line"></div>
+  <footer id="contacto">
+    <strong>🌿 FRESHROUTE LOGISTICS</strong>
+    Conectando alimentos, transportando confianza.
+    <small>© 2026 FreshRoute Logistics</small>
+  </footer>
+
+  <script>
+    /* ====== CONFIGURA AQUÍ TUS DATOS DE EMAILJS ====== */
+    const PUBLIC_KEY  = "6Ekrd3IQHlKS8if3r";
+    const SERVICE_ID  = "service_sfa2w7z";
+    const TEMPLATE_ID = "template_5nijpm7";
+    /* ================================================= */
+
+    emailjs.init({ publicKey: PUBLIC_KEY });
+
+    const form = document.getElementById('form-suscripcion');
+    const input = document.getElementById('user_email');
+    const btn = document.getElementById('btn');
+    const mensaje = document.getElementById('mensaje');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const email = input.value.trim();
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        mensaje.className = 'error';
+        mensaje.textContent = 'Escribe un correo válido 🙏';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando... 🚚';
+      mensaje.textContent = '';
+
+      emailjs.send(SERVICE_ID, TEMPLATE_ID, { user_email: email })
+        .then(function () {
+          mensaje.className = 'ok';
+          mensaje.textContent = '¡Listo! Revisa tu bandeja de entrada 📬';
+          form.reset();
+        })
+        .catch(function (err) {
+          console.error(err);
+          mensaje.className = 'error';
+          mensaje.textContent = 'No se pudo enviar. Intenta de nuevo.';
+        })
+        .finally(function () {
+          btn.disabled = false;
+          btn.textContent = 'Suscribirme →';
+        });
+    });
+
+    /* Aparición al hacer scroll */
+    const obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el); });
+  </script>
+</body>
+</html>
